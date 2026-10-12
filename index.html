@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0a1322" />
+  <title>רשימת קניות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="page">
+
+    <header class="hero-card">
+      <div class="hero-content">
+        <div class="category-label">רשימת קניות <span id="syncStatus" class="sync hidden"></span></div>
+        <h1 id="viewTitle" class="recipe-title">טוען…</h1>
+        <p id="viewSummary" class="summary"></p>
+
+        <div class="button-row">
+          <button id="chooseBtn" class="choose-button"><span>בחר קטגוריה</span></button>
+          <button id="editBtn" class="ghost-button">עריכת הרשימה</button>
+          <button id="connectBtn" class="ghost-button">🔑 התחברות לעדכון</button>
+        </div>
+
+        <div class="nav-row">
+          <button id="prevBtn" class="nav-button" aria-label="קטגוריה קודמת">&#8594;</button>
+          <span id="navCounter" class="nav-counter"></span>
+          <button id="nextBtn" class="nav-button" aria-label="קטגוריה הבאה">&#8592;</button>
+        </div>
+      </div>
+
+      <div class="hero-media">
+        <div id="ring" class="ring" style="--pct: 0">
+          <div class="ring-inner">
+            <span id="ringPct" class="ring-pct">0%</span>
+            <span class="ring-label">נקנו</span>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="content-card">
+      <div class="content-head">
+        <h2 class="content-title">מוצרים</h2>
+        <button id="clearBtn" class="ghost-button small">נקה סימונים</button>
+      </div>
+      <div id="itemsBox" class="items-list groceries-list"></div>
+    </section>
+
+  </div>
+
+  <!-- מודאל בחירת קטגוריה -->
+  <div id="chooseOverlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2 class="modal-title">בחירת קטגוריה</h2>
+      <label class="field">
+        <span class="field-label">קטגוריה</span>
+        <select id="categorySelect"></select>
+      </label>
+      <div class="modal-actions">
+        <button id="chooseCancel" class="ghost-button">ביטול</button>
+        <button id="chooseOk" class="choose-button"><span>בחר</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודאל עריכת הרשימה -->
+  <div id="editOverlay" class="modal-overlay hidden">
+    <div class="modal-card wide editor">
+
+      <div class="editor-head">
+        <h2 class="modal-title">עריכת הרשימה</h2>
+        <div class="tabs" role="tablist">
+          <button id="tabVisual" class="tab active" role="tab">עורך חזותי</button>
+          <button id="tabText" class="tab" role="tab">טקסט</button>
+        </div>
+      </div>
+
+      <div id="visualPane" class="editor-body">
+        <div id="editorCats"></div>
+        <div class="add-cat">
+          <input id="newCatInput" class="text-input" type="text" placeholder="שם קטגוריה חדשה…" maxlength="40" />
+          <button id="newCatBtn" class="choose-button small"><span>הוסף קטגוריה</span></button>
+        </div>
+      </div>
+
+      <div id="textPane" class="editor-body hidden">
+        <p class="hint">
+          שורה לכל קטגוריה: <code>קטגוריה: מוצר, מוצר x2, מוצר</code> &nbsp;·&nbsp;
+          הכמות נכתבת אחרי <code>x</code>. כמות <code>x0</code> = הפריט נשאר ברשימת כל הפריטים אבל לא ברשימת הקניות.
+        </p>
+        <textarea id="editText" class="edit-text" spellcheck="false" dir="rtl"></textarea>
+      </div>
+
+      <p id="editNote" class="hint footnote">
+        כמות 0 מאפירה את הפריט ומסירה אותו מרשימת הקניות (הוא נשאר ברשימת כל הפריטים, ואפשר להחזיר אותו עם +).
+        השמירה כותבת לקבצים <code>shopping_list.txt</code> ו-<code>all_items.txt</code> בריפו, וכולם יראו את השינוי.
+      </p>
+      <div id="editMsg" class="edit-msg"></div>
+
+      <div class="modal-actions spread">
+        <div class="actions-group">
+          <button id="editCancel" class="ghost-button">ביטול</button>
+          <button id="editSave" class="choose-button"><span>שמור</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודאל חיבור ל-GitHub -->
+  <div id="connectOverlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2 class="modal-title">חיבור ל-GitHub</h2>
+      <p id="connectIntro" class="hint"></p>
+      <ol class="hint steps">
+        <li><a id="tokenLink" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">פתחו יצירת טוקן ב-GitHub</a> (Fine-grained token).</li>
+        <li><b>Repository access</b>: Only select repositories ← בחרו את הריפו של הרשימה.</li>
+        <li><b>Permissions</b> ← Repository permissions ← <b>Contents: Read and write</b>.</li>
+        <li>לחצו Generate, העתיקו את הטוקן והדביקו כאן.</li>
+      </ol>
+      <label class="field">
+        <span class="field-label">טוקן (נשמר במכשיר הזה בלבד)</span>
+        <input id="tokenInput" class="text-input" type="password" autocomplete="off" spellcheck="false" dir="ltr" placeholder="github_pat_…" />
+      </label>
+      <div id="connectMsg" class="edit-msg"></div>
+      <div class="modal-actions spread">
+        <button id="disconnectBtn" class="ghost-button hidden">התנתק</button>
+        <div class="actions-group">
+          <button id="connectCancel" class="ghost-button">סגור</button>
+          <button id="connectOk" class="choose-button"><span>התחבר</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
