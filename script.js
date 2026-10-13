@@ -432,8 +432,15 @@ if (typeof document !== "undefined") {
         visualPane: $("visualPane"),
         textPane: $("textPane"),
         editorCats: $("editorCats"),
-        newCatInput: $("newCatInput"),
-        newCatBtn: $("newCatBtn"),
+        addItemOpen: $("addItemOpen"),
+        addItemOverlay: $("addItemOverlay"),
+        addItemName: $("addItemName"),
+        addItemCategory: $("addItemCategory"),
+        newItemCategoryField: $("newItemCategoryField"),
+        addItemNewCategory: $("addItemNewCategory"),
+        addItemMsg: $("addItemMsg"),
+        addItemCancel: $("addItemCancel"),
+        addItemConfirm: $("addItemConfirm"),
         editText: $("editText"),
         editMsg: $("editMsg"),
         editCancel: $("editCancel"),
@@ -920,7 +927,7 @@ if (typeof document !== "undefined") {
         return b;
     }
 
-    function renderEditor(focusAddFor) {
+    function renderEditor() {
         const root = els.editorCats;
         root.innerHTML = "";
 
@@ -982,67 +989,130 @@ if (typeof document !== "undefined") {
             });
             card.appendChild(list);
 
-            /* הוספת פריט */
-            const addRow = el("div", "ed-add");
-            const addInput = el("input", "text-input");
-            addInput.type = "text";
-            addInput.placeholder = "הוסף פריט… (אפשר כמה, מופרדים בפסיק)";
-            addInput.maxLength = 120;
-            addInput.dataset.cat = String(ci);
-
-            const addItems = () => {
-                const parts = addInput.value.split(/[,،]/).map((s) => s.trim()).filter(Boolean);
-                if (!parts.length) return;
-                parts.forEach((p) => {
-                    const it = parseItem(p);
-                    const clean = cleanName(it.name);
-                    if (clean && !cat.items.some((x) => cleanName(x.name) === clean)) {
-                        cat.items.push({ name: clean, qty: it.qty, done: false });
-                    }
-                });
-                renderEditor(ci);
-            };
-            addInput.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") { e.preventDefault(); addItems(); }
-            });
-
-            const addBtn = el("button", "add-btn", "＋ הוסף");
-            addBtn.type = "button";
-            addBtn.addEventListener("click", addItems);
-
-            addRow.append(addInput, addBtn);
-            card.appendChild(addRow);
-
             root.appendChild(card);
         });
 
-        if (focusAddFor !== undefined) {
-            const target = root.querySelector(`.ed-add input[data-cat="${focusAddFor}"]`);
-            if (target) target.focus();
-        }
     }
 
-    function addCategory() {
-        const name = cleanName(els.newCatInput.value);
-        if (!name) return;
-        if (draft.some((c) => cleanName(c.name) === name)) {
-            setEditMsg("קטגוריה בשם הזה כבר קיימת.", true);
+    /* ---------- הוספת פריט דרך חלון קבוע ---------- */
+
+    function refreshAddItemCategories() {
+        const select = els.addItemCategory;
+        select.innerHTML = "";
+        draft.forEach((cat, i) => {
+            const option = document.createElement("option");
+            option.value = String(i);
+            option.textContent = cat.name || `קטגוריה ${i + 1}`;
+            select.appendChild(option);
+        });
+        const newOption = document.createElement("option");
+        newOption.value = "__new__";
+        newOption.textContent = "＋ יצירת קטגוריה חדשה";
+        select.appendChild(newOption);
+        updateNewCategoryField();
+    }
+
+    function updateNewCategoryField() {
+        const creating = els.addItemCategory.value === "__new__";
+        els.newItemCategoryField.classList.toggle("hidden", !creating);
+        if (creating) els.addItemNewCategory.focus();
+    }
+
+    function openAddItem() {
+        if (editorMode !== "visual") {
+            setEditMsg("כדי להוסיף פריט, עברו ללשונית «עורך חזותי».", true);
             return;
         }
-        setEditMsg("");
-        draft.push({ name, items: [] });
-        els.newCatInput.value = "";
-        renderEditor(draft.length - 1);
-        const cards = els.editorCats.querySelectorAll(".ed-cat");
-        if (cards.length) cards[cards.length - 1].scrollIntoView({ block: "nearest", behavior: "smooth" });
+        refreshAddItemCategories();
+        els.addItemName.value = "";
+        els.addItemNewCategory.value = "";
+        els.addItemMsg.textContent = "";
+        els.addItemMsg.classList.remove("error");
+        els.addItemOverlay.classList.remove("hidden");
+        els.addItemName.focus();
     }
 
-    els.newCatBtn.addEventListener("click", addCategory);
-    els.newCatInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") { e.preventDefault(); addCategory(); }
+    function closeAddItem() {
+        els.addItemOverlay.classList.add("hidden");
+    }
+
+    els.addItemOpen.addEventListener("click", openAddItem);
+    els.addItemCancel.addEventListener("click", closeAddItem);
+    els.addItemOverlay.addEventListener("click", (e) => {
+        if (e.target === els.addItemOverlay) closeAddItem();
+    });
+    els.addItemCategory.addEventListener("change", updateNewCategoryField);
+
+    function confirmAddItem() {
+        const parts = els.addItemName.value.split(/[,،]/).map((s) => s.trim()).filter(Boolean);
+        if (!parts.length) {
+            els.addItemMsg.textContent = "יש להזין שם פריט.";
+            els.addItemMsg.classList.add("error");
+            els.addItemName.focus();
+            return;
+        }
+
+        let category;
+        if (els.addItemCategory.value === "__new__") {
+            const name = cleanName(els.addItemNewCategory.value);
+            if (!name) {
+                els.addItemMsg.textContent = "יש להזין שם לקטגוריה החדשה.";
+                els.addItemMsg.classList.add("error");
+                els.addItemNewCategory.focus();
+                return;
+            }
+            category = draft.find((c) => cleanName(c.name) === name);
+            if (!category) {
+                category = { name, items: [] };
+                draft.push(category);
+            }
+        } else {
+            category = draft[Number(els.addItemCategory.value)];
+        }
+
+        if (!category) {
+            els.addItemMsg.textContent = "יש לבחור קטגוריה.";
+            els.addItemMsg.classList.add("error");
+            return;
+        }
+
+        let added = 0;
+        parts.forEach((part) => {
+            const parsed = parseItem(part);
+            const name = cleanName(parsed.name);
+            if (name && !category.items.some((item) => cleanName(item.name) === name)) {
+                category.items.push({ name, qty: parsed.qty, done: false });
+                added++;
+            }
+        });
+
+        if (!added) {
+            els.addItemMsg.textContent = "הפריטים כבר קיימים בקטגוריה שנבחרה.";
+            els.addItemMsg.classList.add("error");
+            return;
+        }
+
+        renderEditor();
+        closeAddItem();
+        setEditMsg(added === 1 ? "הפריט נוסף." : `${added} פריטים נוספו.`);
+    }
+
+    els.addItemConfirm.addEventListener("click", confirmAddItem);
+    els.addItemName.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+            e.preventDefault();
+            if (els.addItemCategory.value === "__new__" && !cleanName(els.addItemNewCategory.value)) {
+                els.addItemNewCategory.focus();
+            } else {
+                confirmAddItem();
+            }
+        }
+    });
+    els.addItemNewCategory.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") { e.preventDefault(); confirmAddItem(); }
     });
 
-    /* ---------- טאבים: חזותי / טקסט ---------- */
+        /* ---------- טאבים: חזותי / טקסט ---------- */
 
     const hasContent = (text) => text.replace(/^\s*#.*$/gm, "").trim() !== "";
 
@@ -1092,7 +1162,6 @@ if (typeof document !== "undefined") {
         els.textPane.classList.add("hidden");
         els.tabVisual.classList.add("active");
         els.tabText.classList.remove("active");
-        els.newCatInput.value = "";
         els.editSave.disabled = false;
         setEditMsg("");
         renderEditor();

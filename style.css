@@ -391,6 +391,8 @@ html, body {
   display: flex;
   flex-direction: column;
   padding: 24px 24px 20px;
+  max-height: 92vh;
+  overflow: hidden;
 }
 
 .editor-head {
@@ -429,7 +431,7 @@ html, body {
 .editor-body {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: 52vh;
+  max-height: none;
   overflow-y: auto;
   padding: 2px 4px 4px 2px;
   margin-bottom: 10px;
@@ -552,16 +554,21 @@ html, body {
 }
 .add-btn:hover { background: rgba(69, 214, 230, 0.28); }
 
-.add-cat {
-  display: flex;
-  gap: 10px;
-  padding: 14px;
-  border: 1.5px dashed var(--cyan-soft);
-  border-radius: 18px;
-}
 .choose-button.small { font-size: 14.5px; padding: 10px 20px; }
 
-.hint.footnote { font-size: 13px; margin: 4px 0 0; }
+.editor-footer {
+  flex: 0 0 auto;
+  padding-top: 10px;
+  border-top: 1px solid var(--card-border);
+  background: var(--card);
+}
+.editor-add-item {
+  min-height: 48px;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 12px;
+}
+.editor-footer .modal-actions { margin-top: 12px; }
 
 .modal-title { font-weight: 800; font-size: 22px; margin: 0 0 20px; text-align: right; }
 
@@ -623,8 +630,8 @@ html, body {
   .modal-card { padding: 22px; }
   .modal-card.editor { padding: 18px 14px 16px; }
   .modal-overlay { padding: 10px; }
-  .editor-body { max-height: 46vh; }
-  .add-cat { flex-direction: column; }
+  .editor-body { max-height: none; }
+  .modal-card.editor { max-height: 94vh; }
   .item-text { font-size: 18px; }
   .list-item { gap: 10px; }
   .modal-actions.spread { gap: 8px; }
