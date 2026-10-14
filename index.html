@@ -21,7 +21,7 @@
         <p id="viewSummary" class="summary"></p>
 
         <div class="button-row">
-          <button id="chooseBtn" class="choose-button"><span>בחר קטגוריה</span></button>
+          <button id="chooseBtn" class="choose-button add-item-button" aria-label="הוספת מוצר" title="הוספת מוצר"><span aria-hidden="true">+</span></button>
           <button id="editBtn" class="ghost-button icon-button" aria-label="עריכת הרשימה" title="עריכת הרשימה"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5h13M8 12h13M8 19h13M3 5h.01M3 12h.01M3 19h.01" /></svg></button>
           <button id="connectBtn" class="ghost-button">🔑 התחברות לעדכון</button>
         </div>
@@ -83,10 +83,10 @@
         <textarea id="editText" class="edit-text" spellcheck="false" dir="rtl"></textarea>
       </div>
 
-      <p id="editNote" class="hint footnote">
-        כמות 0 מאפירה את הפריט ומסירה אותו מרשימת הקניות (הוא נשאר ברשימת כל הפריטים, ואפשר להחזיר אותו עם +).
-        השמירה כותבת לקבצים <code>shopping_list.txt</code> ו-<code>all_items.txt</code> בריפו, וכולם יראו את השינוי.
-      </p>
+      <div id="editorAddBar" class="editor-add-bar">
+        <span>הוספת מוצר</span>
+        <button id="openAddItemBtn" class="choose-button" type="button"><span>＋ הוסף</span></button>
+      </div>
       <div id="editMsg" class="edit-msg"></div>
 
       <div class="modal-actions spread">
@@ -94,6 +94,30 @@
           <button id="editCancel" class="ghost-button">ביטול</button>
           <button id="editSave" class="choose-button"><span>שמור</span></button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- מודאל הוספת מוצר לקטגוריה -->
+  <div id="addItemOverlay" class="modal-overlay hidden">
+    <div class="modal-card">
+      <h2 class="modal-title">הוספת מוצר</h2>
+      <label class="field">
+        <span class="field-label">שם המוצר</span>
+        <input id="addItemName" class="text-input" type="text" maxlength="120" placeholder="שם המוצר (אפשר כמה, מופרדים בפסיק)" />
+      </label>
+      <label class="field">
+        <span class="field-label">קטגוריה</span>
+        <select id="addItemCategory" class="text-input"></select>
+      </label>
+      <label id="addNewCategoryField" class="field hidden">
+        <span class="field-label">שם קטגוריה חדשה</span>
+        <input id="addNewCategoryName" class="text-input" type="text" maxlength="40" placeholder="שם הקטגוריה החדשה" />
+      </label>
+      <div id="addItemMsg" class="edit-msg"></div>
+      <div class="modal-actions">
+        <button id="addItemCancel" class="ghost-button" type="button">ביטול</button>
+        <button id="addItemConfirm" class="choose-button" type="button"><span>הוסף</span></button>
       </div>
     </div>
   </div>

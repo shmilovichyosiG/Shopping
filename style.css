@@ -646,6 +646,24 @@ html, body {
   .modal-actions .ghost-button, .modal-actions .choose-button { padding-inline: 16px; }
 }
 
+
+/* סרגל הוספה קבוע בתחתית חלון העריכה, ללא תלות בגלילת רשימת הקטגוריות */
+.editor-add-bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  margin-top: 4px;
+  background: var(--card);
+  border-top: 1px solid var(--card-border);
+}
+.editor-add-bar > span { color: var(--text-muted); font-weight: 700; }
+.editor-add-bar .choose-button { padding: 10px 20px; }
+
 /* ---------- Connect dialog / read-only quantity ---------- */
 
 .hint.steps { margin: 0 0 14px; padding-inline-start: 22px; }

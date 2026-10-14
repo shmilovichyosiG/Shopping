@@ -427,6 +427,16 @@ if (typeof document !== "undefined") {
         visualPane: $("visualPane"),
         textPane: $("textPane"),
         editorCats: $("editorCats"),
+        editorAddBar: $("editorAddBar"),
+        openAddItemBtn: $("openAddItemBtn"),
+        addItemOverlay: $("addItemOverlay"),
+        addItemName: $("addItemName"),
+        addItemCategory: $("addItemCategory"),
+        addNewCategoryField: $("addNewCategoryField"),
+        addNewCategoryName: $("addNewCategoryName"),
+        addItemMsg: $("addItemMsg"),
+        addItemCancel: $("addItemCancel"),
+        addItemConfirm: $("addItemConfirm"),
         newCatInput: $("newCatInput"),
         newCatBtn: $("newCatBtn"),
         editText: $("editText"),
@@ -967,36 +977,6 @@ if (typeof document !== "undefined") {
             });
             card.appendChild(list);
 
-            /* הוספת פריט */
-            const addRow = el("div", "ed-add");
-            const addInput = el("input", "text-input");
-            addInput.type = "text";
-            addInput.placeholder = "הוסף פריט… (אפשר כמה, מופרדים בפסיק)";
-            addInput.maxLength = 120;
-            addInput.dataset.cat = String(ci);
-
-            const addItems = () => {
-                const parts = addInput.value.split(/[,،]/).map((s) => s.trim()).filter(Boolean);
-                if (!parts.length) return;
-                parts.forEach((p) => {
-                    const it = parseItem(p);
-                    const clean = cleanName(it.name);
-                    if (clean && !cat.items.some((x) => cleanName(x.name) === clean)) {
-                        cat.items.push({ name: clean, qty: it.qty, done: false });
-                    }
-                });
-                renderEditor(ci);
-            };
-            addInput.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") { e.preventDefault(); addItems(); }
-            });
-
-            const addBtn = el("button", "add-btn", "＋ הוסף");
-            addBtn.type = "button";
-            addBtn.addEventListener("click", addItems);
-
-            addRow.append(addInput, addBtn);
-            card.appendChild(addRow);
 
             root.appendChild(card);
         });
@@ -1006,6 +986,79 @@ if (typeof document !== "undefined") {
             if (target) target.focus();
         }
     }
+
+    const NEW_CATEGORY_VALUE = "__new_category__";
+
+    function openAddItemDialog() {
+        els.addItemCategory.innerHTML = "";
+        draft.forEach((cat, index) => {
+            const option = el("option", "", cat.name);
+            option.value = String(index);
+            els.addItemCategory.appendChild(option);
+        });
+        const newOption = el("option", "", "＋ יצירת קטגוריה חדשה…");
+        newOption.value = NEW_CATEGORY_VALUE;
+        els.addItemCategory.appendChild(newOption);
+        els.addNewCategoryField.classList.toggle("hidden", els.addItemCategory.value !== NEW_CATEGORY_VALUE);
+        els.addItemName.value = "";
+        els.addNewCategoryName.value = "";
+        els.addItemMsg.textContent = "";
+        els.addItemOverlay.classList.remove("hidden");
+        setTimeout(() => els.addItemName.focus(), 0);
+    }
+
+    els.openAddItemBtn.addEventListener("click", openAddItemDialog);
+    els.addItemCategory.addEventListener("change", () => {
+        const isNew = els.addItemCategory.value === NEW_CATEGORY_VALUE;
+        els.addNewCategoryField.classList.toggle("hidden", !isNew);
+        if (isNew) els.addNewCategoryName.focus();
+    });
+    const closeAddItemDialog = () => els.addItemOverlay.classList.add("hidden");
+    els.addItemCancel.addEventListener("click", closeAddItemDialog);
+    els.addItemOverlay.addEventListener("click", (event) => {
+        if (event.target === els.addItemOverlay) closeAddItemDialog();
+    });
+    els.addItemConfirm.addEventListener("click", () => {
+        const parts = els.addItemName.value.split(/[,،]/).map((part) => part.trim()).filter(Boolean);
+        if (!parts.length) {
+            els.addItemMsg.textContent = "יש להזין שם מוצר.";
+            return;
+        }
+        let category;
+        if (els.addItemCategory.value === NEW_CATEGORY_VALUE) {
+            const name = cleanName(els.addNewCategoryName.value);
+            if (!name) {
+                els.addItemMsg.textContent = "יש להזין שם לקטגוריה החדשה.";
+                return;
+            }
+            category = draft.find((cat) => cleanName(cat.name) === name);
+            if (!category) {
+                category = { name, items: [] };
+                draft.push(category);
+            }
+        } else {
+            category = draft[Number(els.addItemCategory.value)];
+        }
+        if (!category) {
+            els.addItemMsg.textContent = "יש לבחור קטגוריה.";
+            return;
+        }
+        parts.forEach((part) => {
+            const parsed = parseItem(part);
+            const name = cleanName(parsed.name);
+            if (name && !category.items.some((item) => cleanName(item.name) === name)) {
+                category.items.push({ name, qty: parsed.qty, done: false });
+            }
+        });
+        renderEditor(draft.indexOf(category));
+        closeAddItemDialog();
+    });
+    els.addItemName.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") { event.preventDefault(); els.addItemConfirm.click(); }
+    });
+    els.addNewCategoryName.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") { event.preventDefault(); els.addItemConfirm.click(); }
+    });
 
     function addCategory() {
         const name = cleanName(els.newCatInput.value);
@@ -1035,8 +1088,10 @@ if (typeof document !== "undefined") {
         if (mode === editorMode) return true;
 
         if (mode === "text") {
+            els.editorAddBar.classList.add("hidden");
             els.editText.value = serializeCombined(draft);
         } else {
+            els.editorAddBar.classList.remove("hidden");
             const text = els.editText.value;
             const parsed = parseList(text);
             if (parsed.length === 0 && hasContent(text)) {
@@ -1075,6 +1130,7 @@ if (typeof document !== "undefined") {
         editorMode = "visual";
         els.visualPane.classList.remove("hidden");
         els.textPane.classList.add("hidden");
+        els.editorAddBar.classList.remove("hidden");
         els.tabVisual.classList.add("active");
         els.tabText.classList.remove("active");
         els.newCatInput.value = "";
@@ -1098,6 +1154,7 @@ if (typeof document !== "undefined") {
         if (editorMode === "visual") {
             cats = draft;
         } else {
+            els.editorAddBar.classList.remove("hidden");
             const text = els.editText.value;
             cats = parseList(text);
             if (cats.length === 0 && hasContent(text)) {
