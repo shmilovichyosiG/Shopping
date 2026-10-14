@@ -48,7 +48,7 @@
         <select id="categorySelect"></select>
       </label>
       <div class="modal-actions">
-        <button id="chooseCancel" class="ghost-button">ביטול</button>
+        <button id="chooseCancel" class="choose-button">ביטול</button>
         <button id="chooseOk" class="choose-button"><span>בחר</span></button>
       </div>
     </div>
@@ -60,18 +60,10 @@
 
       <div class="editor-head">
         <h2 class="modal-title">עריכת הרשימה</h2>
-        <div class="tabs" role="tablist">
-          <button id="tabVisual" class="tab active" role="tab">עורך חזותי</button>
-          <button id="tabText" class="tab" role="tab">טקסט</button>
-        </div>
       </div>
 
       <div id="visualPane" class="editor-body">
-        <div id="editorCats"></div>
-        <div class="add-cat">
-          <input id="newCatInput" class="text-input" type="text" placeholder="שם קטגוריה חדשה…" maxlength="40" />
-          <button id="newCatBtn" class="choose-button small"><span>הוסף קטגוריה</span></button>
-        </div>
+          <div id="editorCats"></div>
       </div>
 
       <div id="textPane" class="editor-body hidden">
@@ -83,18 +75,14 @@
       </div>
 
       <div id="editorAddBar" class="editor-add-bar">
-        <span>הוספת מוצר</span>
-        <button id="openAddItemBtn" class="choose-button" type="button"><span>＋ הוסף</span></button>
+          <div class="actions-group">
+              <button id="editCancel" class="add-btn">ביטול</button>
+              <button id="editSave" class="add-btn"><span>שמור</span></button>
+              <button id="openAddItemBtn" class="add-btn" type="button"><span>＋ מוצר</span></button>
+          </div>
       </div>
-      <div id="editMsg" class="edit-msg"></div>
-
-      <div class="modal-actions spread">
-        <div class="actions-group">
-          <button id="editCancel" class="ghost-button">ביטול</button>
-          <button id="editSave" class="choose-button"><span>שמור</span></button>
-        </div>
+        <div id="editMsg" class="edit-msg"></div>
       </div>
-    </div>
   </div>
 
   <!-- מודאל הוספת מוצר לקטגוריה -->
@@ -115,7 +103,7 @@
       </label>
       <div id="addItemMsg" class="edit-msg"></div>
       <div class="modal-actions">
-        <button id="addItemCancel" class="ghost-button" type="button">ביטול</button>
+        <button id="addItemCancel" class="choose-button" type="button">ביטול</button>
         <button id="addItemConfirm" class="choose-button" type="button"><span>הוסף</span></button>
       </div>
     </div>

@@ -405,7 +405,7 @@ html, body {
 .modal-card.editor {
   display: flex;
   flex-direction: column;
-  padding: 24px 24px 20px;
+  padding: 24px 24px 0px;
 }
 
 .editor-head {
@@ -553,17 +553,18 @@ html, body {
 .ed-add .text-input { font-size: 15px; }
 
 .add-btn {
-  flex: 0 0 auto;
-  font-family: 'Heebo', sans-serif;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--cyan);
-  background: var(--cyan-soft);
-  border: none;
-  border-radius: 10px;
-  padding: 0 16px;
-  cursor: pointer;
-  white-space: nowrap;
+    flex: 0 0 auto;
+    font-family: 'Heebo', sans-serif;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--cyan);
+    background: var(--cyan-soft);
+    border: none;
+    border-radius: 10px;
+    padding: 0 16px;
+    cursor: pointer;
+    white-space: nowrap;
+    height: 38px;
 }
 .add-btn:hover { background: rgba(69, 214, 230, 0.28); }
 
@@ -619,7 +620,7 @@ html, body {
 }
 .edit-text:focus { outline: 1px solid var(--cyan); }
 
-.edit-msg { min-height: 22px; margin-top: 8px; font-size: 14px; color: var(--cyan); text-align: right; }
+.edit-msg { min-height: 12px; margin-top: 8px; font-size: 14px; color: var(--cyan); text-align: right; }
 .edit-msg.error { color: #ff8b8b; }
 
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
