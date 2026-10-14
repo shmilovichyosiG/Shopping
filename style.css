@@ -683,3 +683,11 @@ html, body {
   padding: 3px 12px;
 }
 .list-item.done .qty-pill { opacity: 0.45; }
+
+/* הסתרת כפתור הפלוס במסך הראשי; נשארים רק עריכה והתחברות */
+.add-item-button {
+  display: none !important;
+}
+
+/* Shopping list heading */
+.recipe-title .cart-icon { display: inline-block; margin-inline-start: 0; margin-inline-end: 8px; vertical-align: middle; }

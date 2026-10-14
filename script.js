@@ -491,11 +491,8 @@ if (typeof document !== "undefined") {
         const cats = visibleCategories();
         const { total, done } = stats(cats);
 
-        els.viewTitle.textContent = viewIndex === 0 ? ALL_LABEL : data[viewIndex - 1].name;
-        els.viewSummary.textContent =
-            total === 0 ? "אין מוצרים" :
-            done === total ? "הכל נקנה 🎉" :
-            `נותרו ${total - done} מתוך ${total}`;
+        els.viewTitle.innerHTML = '<span class="cart-icon" aria-hidden="true">🛒</span> רשימת קניות';
+        els.viewSummary.textContent = "";
 
         els.connectBtn.textContent = canWrite() ? "🔑 מחובר" : "🔑 התחברות לעדכון";
         els.connectBtn.classList.toggle("connected", canWrite());
@@ -807,7 +804,7 @@ if (typeof document !== "undefined") {
 
     const closeChoose = () => els.chooseOverlay.classList.add("hidden");
 
-    els.chooseBtn.addEventListener("click", openChoose);
+    if (els.chooseBtn) els.chooseBtn.addEventListener("click", openChoose);
     els.chooseCancel.addEventListener("click", closeChoose);
     els.chooseOverlay.addEventListener("click", (e) => { if (e.target === els.chooseOverlay) closeChoose(); });
     els.chooseOk.addEventListener("click", () => {
