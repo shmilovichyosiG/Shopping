@@ -51,7 +51,28 @@ html, body {
   box-shadow: 0 20px 50px var(--shadow);
 }
 
-.hero-content { text-align: right; }
+.hero-content {
+    text-align: right;
+}
+
+.title-actions-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 0;
+}
+
+    .title-actions-row .recipe-title {
+        margin: 0;
+        flex: 0 1 auto;
+    }
+
+    .title-actions-row .button-row {
+        flex: 0 0 auto;
+        margin: 0;
+    }
 
 .category-label {
   font-size: 20px;
@@ -85,7 +106,7 @@ html, body {
 }
 
 .summary {
-  margin: 0 0 22px;
+  margin: 0 0 0px;
   color: var(--text-muted);
   font-size: 17px;
 }
