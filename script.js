@@ -1502,15 +1502,21 @@ function renderEditor(focusAddFor) {
                 count.textContent = String(activeCount());
             }, 0);
 
+
             const rm = iconButton(
                 "מחק פריט",
                 "✕",
                 "danger soft",
                 () => {
+                    if (!confirm(`האם למחוק את הפריט «${ item.name }»?`)) {
+                        return;
+                    }
+
                     cat.items.splice(ii, 1);
                     renderEditor();
                 }
             );
+
 
             row.append(itemInput, stepper, rm);
             list.appendChild(row);
