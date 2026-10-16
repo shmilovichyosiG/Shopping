@@ -727,7 +727,7 @@ html, body {
 
 /* הגדרות חלון האישור עצמו */
 .confirm-card {
-    max-width: 500px;
+    max-width: 400px;
     padding: 34px 30px 28px;
     border-radius: 28px;
     text-align: center;
@@ -737,8 +737,8 @@ html, body {
 
 /* עיצוב הסמל בחלון האישור */
 .confirm-icon {
-    width: 84px;
-    height: 84px;
+    width: 74px;
+    height: 74px;
     margin: 0 auto 22px;
     display: grid;
     place-items: center;
@@ -821,7 +821,7 @@ html, body {
     /* עיצוב לחצן אישור המחיקה */
 .confirm-actions .add-btn {
     height: 48px;
-    width: 200px;
+    width: 150px;
     font-size: 17px;
 }
 
