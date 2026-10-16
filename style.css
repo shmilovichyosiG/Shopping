@@ -362,7 +362,7 @@ html, body {
   padding: 20px;
   z-index: 10;
 }
-
+/* מסך הוספת מוצר */
 .modal-card {
   width: 100%;
   max-width: 420px;
@@ -374,7 +374,7 @@ html, body {
   max-height: 92vh;
   overflow: auto;
 }
-.modal-card.wide { max-width: 680px; }
+.modal-card.wide { max-width: 680px; max-height: 600px}
 
 /* ---------- Quantity stepper ---------- */
 
@@ -573,11 +573,12 @@ html, body {
 }
 .ed-add .text-input { font-size: 15px; }
 
+/* עיצוב לחצני הוסםת מוצר */
 .add-btn {
     flex: 0 0 auto;
     font-family: 'Heebo', sans-serif;
-    font-size: 14.5px;
-    font-weight: 700;
+    font-size: 17px;
+    font-weight: 840;
     color: var(--cyan);
     background: var(--cyan-soft);
     border: none;
@@ -585,7 +586,10 @@ html, body {
     padding: 0 16px;
     cursor: pointer;
     white-space: nowrap;
-    height: 38px;
+    height: 48px;
+
+    
+}
 }
 .add-btn:hover { background: rgba(69, 214, 230, 0.28); }
 
@@ -646,7 +650,7 @@ html, body {
 
 .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
 .modal-actions.spread { justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
-.actions-group { display: flex; flex-wrap: wrap; gap: 10px; }
+.actions-group { display: flex; flex-wrap: wrap; gap: 20px; }
 
 /* ---------- Responsive ---------- */
 
@@ -678,7 +682,7 @@ html, body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 0;
+  padding: 22px 0 0 ;
   margin-top: 4px;
   background: var(--card);
   border-top: 1px solid var(--card-border);
