@@ -713,3 +713,181 @@ html, body {
 
 /* Shopping list heading */
 .recipe-title .cart-icon { display: inline-block; margin-inline-start: 0; margin-inline-end: 8px; vertical-align: middle; }
+
+.confirm-text strong {
+    color: var(--text);
+    font-weight: 800;
+}
+/* ---------- חלון אישור מחיקת מוצר או קטגוריה ---------- */
+
+/* שכבת הרקע של חלון האישור */
+.confirm-overlay {
+    z-index: 20;
+}
+
+/* הגדרות חלון האישור עצמו */
+.confirm-card {
+    max-width: 500px;
+    padding: 34px 30px 28px;
+    border-radius: 28px;
+    text-align: center;
+    overflow: visible;
+    animation: confirm-in 0.16s ease-out;
+}
+
+/* עיצוב הסמל בחלון האישור */
+.confirm-icon {
+    width: 84px;
+    height: 84px;
+    margin: 0 auto 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 26px;
+    color: var(--cyan);
+    background: rgba(69, 214, 230, 0.14);
+    border: 1px solid rgba(69, 214, 230, 0.28);
+}
+
+    /* הגדרות הגודל והמראה של סמל ה-SVG */
+    .confirm-icon svg {
+        width: 36px;
+        height: 36px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.7;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+/* עיצוב כותרת חלון האישור */
+.confirm-title {
+    margin: 0 0 14px;
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* עיצוב טקסט ההסבר בחלון האישור */
+.confirm-text {
+    margin: 0 0 30px;
+    color: var(--text-muted);
+    font-size: 17px;
+    line-height: 1.55;
+}
+
+/* גובה לחצני ביטול ומחיקת מוצר */
+.confirm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    height: 50px;
+}
+
+/* עיצוב בסיסי של לחצני ביטול ומחיקת מוצר */
+.confirm-btn {
+    height: 58px;
+    padding: 0 16px;
+    font-family: 'Heebo', sans-serif;
+    font-size: 19px;
+    font-weight: 800;
+    border-radius: 18px;
+    cursor: pointer;
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+    /* אפקט הלחיצה על כפתור */
+    .confirm-btn:active {
+        transform: translateY(1px);
+    }
+
+    /* מסגרת מיקוד לכפתור בעת ניווט באמצעות מקלדת */
+    .confirm-btn:focus-visible {
+        outline: 2px solid var(--cyan);
+        outline-offset: 3px;
+    }
+
+    /* עיצוב לחצן ביטול המחיקה */
+    .confirm-btn.cancel {
+        color: var(--text);
+        background: #0c1526;
+        border: 1px solid var(--card-border);
+    }
+
+        /* שינוי מסגרת לחצן הביטול במעבר עכבר */
+        .confirm-btn.cancel:hover {
+            border-color: var(--text-muted);
+        }
+
+    /* עיצוב לחצן אישור המחיקה */
+.confirm-actions .add-btn {
+    height: 48px;
+    width: 200px;
+    font-size: 17px;
+}
+
+/* אנימציית הכניסה של חלון האישור */
+@keyframes confirm-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+/* ביטול אנימציית הכניסה בהתאם להעדפות הנגישות */
+@media (prefers-reduced-motion: reduce) {
+    .confirm-card {
+        animation: none;
+    }
+}
+
+/* התאמות עיצוב למסכים ברוחב של עד 680 פיקסלים */
+@media (max-width: 680px) {
+
+    /* התאמת המרווחים והפינות של החלון לטלפון */
+    .confirm-card {
+        padding: 28px 20px 22px;
+        border-radius: 24px;
+    }
+
+    /* התאמת גודל הסמל והמרווח שמתחתיו לטלפון */
+    .confirm-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 22px;
+        margin-bottom: 18px;
+    }
+
+        /* התאמת גודל סמל ה-SVG לטלפון */
+        .confirm-icon svg {
+            width: 31px;
+            height: 31px;
+        }
+
+    /* התאמת גודל כותרת חלון האישור לטלפון */
+    .confirm-title {
+        font-size: 23px;
+    }
+
+    /* התאמת גודל טקסט ההסבר והמרווח שלו לטלפון */
+    .confirm-text {
+        font-size: 16px;
+        margin-bottom: 24px;
+    }
+
+    /* התאמת המרווח בין הכפתורים לטלפון */
+    .confirm-actions {
+        gap: 10px;
+    }
+
+    /* התאמת גובה הכפתורים, גודל הטקסט והפינות לטלפון */
+    .confirm-btn {
+        height: 52px;
+        font-size: 16px;
+        border-radius: 16px;
+    }
+}

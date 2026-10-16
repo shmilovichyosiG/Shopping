@@ -137,6 +137,21 @@
     </div>
   </div>
 
+  <!-- חלון אישור מחיקה -->
+  <div id="confirmOverlay" class="modal-overlay confirm-overlay hidden" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-describedby="confirmMessage">
+    <div class="modal-card confirm-card">
+      <div class="confirm-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M3.5 6h17M9 6V4.2c0-.66.54-1.2 1.2-1.2h3.6c.66 0 1.2.54 1.2 1.2V6M5.8 6l.9 13.2c.07 1.06.95 1.8 2 1.8h6.6c1.05 0 1.93-.74 2-1.8L18.2 6M10 10.5v6M14 10.5v6" /></svg>
+      </div>
+      <h2 id="confirmTitle" class="confirm-title"></h2>
+      <p id="confirmMessage" class="confirm-text"></p>
+      <div class="confirm-actions">
+        <button id="confirmCancel" type="button" class="add-btn cancel">ביטול</button>
+        <button id="confirmOk" type="button" class="add-btn"></button>
+      </div>
+    </div>
+  </div>
+
   <script src="config.js"></script>
   <script src="script.js"></script>
 </body>

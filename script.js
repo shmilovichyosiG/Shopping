@@ -657,7 +657,12 @@ const els = {
     connectMsg: $("connectMsg"),
     connectOk: $("connectOk"),
     connectCancel: $("connectCancel"),
-    disconnectBtn: $("disconnectBtn")
+    disconnectBtn: $("disconnectBtn"),
+    confirmOverlay: $("confirmOverlay"),
+    confirmTitle: $("confirmTitle"),
+    confirmMessage: $("confirmMessage"),
+    confirmCancel: $("confirmCancel"),
+    confirmOk: $("confirmOk")
 };
 
 /* ---------- בניית המודל ---------- */
@@ -1457,15 +1462,26 @@ function renderEditor(focusAddFor) {
             "מחק קטגוריה",
             "🗑",
             "danger",
-            () => {
-                if (
-                    cat.items.length &&
-                    !confirm(`למחוק את «${cat.name}» וכל הפריטים בה?`)
-                ) {
-                    return;
-                }
+            async () => {
+                const n = cat.items.length;
+                const name = displayName(cat.name);
 
-                draft.splice(ci, 1);
+                const message =
+                    n === 0 ? `למחוק את הקטגוריה «${name}»?` :
+                    n === 1 ? `למחוק את «${name}» ואת הפריט היחיד שבה?` :
+                    `למחוק את «${name}» ואת כל ${n} הפריטים שבה?`;
+
+                const ok = await confirmDialog({
+                    title: "מחיקת קטגוריה",
+                    message,
+                    okLabel: "מחק קטגוריה"
+                });
+                if (!ok) return;
+
+                const index = draft.indexOf(cat);
+                if (index === -1) return;
+
+                draft.splice(index, 1);
                 renderEditor();
             }
         );
@@ -1507,12 +1523,18 @@ function renderEditor(focusAddFor) {
                 "מחק פריט",
                 "✕",
                 "danger soft",
-                () => {
-                    if (!confirm(`האם למחוק את הפריט «${ item.name }»?`)) {
-                        return;
-                    }
+                async () => {
+                    const ok = await confirmDialog({
+                        title: "מחיקת מוצר",
+                        message: `האם למחוק את הפריט «${displayName(item.name)}»?`,
+                        okLabel: "מחק מוצר"
+                    });
+                    if (!ok) return;
 
-                    cat.items.splice(ii, 1);
+                    const index = cat.items.indexOf(item);
+                    if (index === -1) return;
+
+                    cat.items.splice(index, 1);
                     renderEditor();
                 }
             );
@@ -1676,6 +1698,86 @@ els.addNewCategoryName.addEventListener("keydown", (event) => {
         els.addItemConfirm.click();
     }
 });
+
+/* ---------- חלון אישור (במקום confirm של הדפדפן) ---------- */
+
+let confirmResolve = null;
+
+// מחזיר Promise שנפתר ל-true (אישור) או false (ביטול / Escape / לחיצה בחוץ)
+
+    function confirmDialog({ title, message, okLabel }) {
+        return new Promise((resolve) => {
+            if (confirmResolve) confirmResolve(false);
+            confirmResolve = resolve;
+
+            els.confirmTitle.textContent = title;
+
+            // הדגשת שם הקטגוריה או המוצר ללא סוגריים זוויתיים
+            els.confirmMessage.replaceChildren();
+
+            const nameMatch = message.match(/[«<](.*?)[»>]/);
+
+            if (nameMatch) {
+                const before = message.slice(0, nameMatch.index);
+                const name = nameMatch[1];
+                const after = message.slice(
+                    nameMatch.index + nameMatch[0].length
+                );
+
+                els.confirmMessage.append(
+                    document.createTextNode(before)
+                );
+
+                const strong = document.createElement("strong");
+                strong.textContent = name;
+                els.confirmMessage.append(strong);
+
+                els.confirmMessage.append(
+                    document.createTextNode(after)
+                );
+            } else {
+                els.confirmMessage.textContent = message;
+            }
+
+            els.confirmOk.textContent = okLabel;
+
+            els.confirmOverlay.classList.remove("hidden");
+            els.confirmCancel.focus();
+        });
+    }
+
+function closeConfirm(result) {
+    els.confirmOverlay.classList.add("hidden");
+
+    const resolve = confirmResolve;
+    confirmResolve = null;
+    if (resolve) resolve(result);
+}
+
+els.confirmOk.addEventListener("click", () => closeConfirm(true));
+els.confirmCancel.addEventListener("click", () => closeConfirm(false));
+
+els.confirmOverlay.addEventListener("click", (e) => {
+    if (e.target === els.confirmOverlay) closeConfirm(false);
+});
+
+document.addEventListener("keydown", (e) => {
+    if (els.confirmOverlay.classList.contains("hidden")) return;
+
+    if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        closeConfirm(false);
+    } else if (e.key === "Tab") {
+        // שומרים את המקלדת בתוך החלון
+        const buttons = [els.confirmCancel, els.confirmOk];
+        const i = buttons.indexOf(document.activeElement);
+        e.preventDefault();
+        buttons[(i + (e.shiftKey ? -1 : 1) + buttons.length) % buttons.length].focus();
+    }
+}, true);
+
+const displayName = (name) => cleanName(name) || "ללא שם";
 
 /* ---------- טאבים: חזותי / טקסט ---------- */
 
