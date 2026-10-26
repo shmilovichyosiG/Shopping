@@ -780,7 +780,9 @@ function makeStepper(qty, onChange, min, unit = "%") {
     let current = qty;
 
     const paint = () => {
-        num.textContent = unitAmount({ qty: current, unit });
+        num.textContent = unit === "$"
+            ? `${(current * 0.5).toFixed(1)} ק״ג`
+            : unitAmount({ qty: current, unit });
         minus.disabled = current <= min;
         plus.disabled = current >= MAX_QTY;
         const stepDescription = unit === "@" ? "100 גרם" : unit === "$" ? "0.5 ק״ג" : "יחידה אחת";
