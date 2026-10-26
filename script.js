@@ -40,9 +40,11 @@ function parseItem(raw) {
     let s = String(raw).trim();
     let done = false;
     let unit = "%";
+    let unitExplicit = false;
     const unitMatch = s.match(/([@$%])(?=\s*(?:[x×*]\s*\d{1,2})?$)/);
     if (unitMatch) {
         unit = unitMatch[1];
+        unitExplicit = true;
         s = s.slice(0, unitMatch.index) + s.slice(unitMatch.index + 1);
         s = s.trim();
     }
@@ -59,11 +61,12 @@ function parseItem(raw) {
             name: m[1].trim(),
             qty: Math.min(MAX_QTY, Number(m[2])),
             done,
-            unit
+            unit,
+            unitExplicit
         };
     }
 
-    return { name: s, qty: 1, done, unit };
+    return { name: s, qty: 1, done, unit, unitExplicit };
 }
 
 function parseList(text) {
@@ -242,7 +245,9 @@ function mergeModel(catalog, list) {
 
             x.qty = it.qty;
             x.done = it.qty > 0 && it.done;
-            x.unit = it.unit || x.unit || "%";
+            // Keep the unit from all_items.txt unless the shopping-list entry explicitly contains a unit marker.
+            if (it.unitExplicit) x.unit = it.unit;
+            if (!x.unit) x.unit = "%";
         });
     });
 
