@@ -702,7 +702,7 @@ html, body {
 .qty-pill {
   flex: 0 0 auto;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: normal;
   color: #ffffff;
   background: transparent;
   border-radius: 0;

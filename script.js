@@ -1401,15 +1401,16 @@ els.tokenInput.addEventListener("keydown", (e) => {
 let draft = [];
 let editorMode = "visual";
 
-const cloneData = () =>
-    data.map((c) => ({
-        name: c.name,
-        items: c.items.map((it) => ({
-            name: it.name,
-            qty: it.qty,
-            done: it.done
-        }))
-    }));
+    const cloneData = () =>
+        data.map((c) => ({
+            name: c.name,
+            items: c.items.map((it) => ({
+                name: it.name,
+                qty: it.qty,
+                done: it.done,
+                unit: it.unit || "%"
+            }))
+        }));
 
 function setEditMsg(msg, isError) {
     els.editMsg.textContent = msg || "";
