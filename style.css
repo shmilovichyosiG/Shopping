@@ -708,7 +708,10 @@ html, body {
   border-radius: 0;
   padding: 3px 4px;
 }
-.list-item.done .qty-pill { opacity: 0.45; }
+.list-item.done .qty-pill {
+    opacity: 0.45;
+    text-decoration: line-through;
+}
 
 /* הסתרת כפתור הפלוס במסך הראשי; נשארים רק עריכה והתחברות */
 .add-item-button {
