@@ -858,25 +858,6 @@ function renderItems(cats) {
             );
             if (item.qty > 0) row.appendChild(el("span", "qty-pill", unitAmount(item)));
 
-            if (canWrite()) {
-                row.appendChild(
-                    makeStepper(item.qty, (q) => {
-                        item.qty = q;
-
-                        queueOp({
-                            t: "qty",
-                            cat: cat.name,
-                            name: item.name,
-                            qty: q
-                        });
-                    }, 1, item.unit)
-                );
-
-            } else {
-                row.appendChild(
-                    el("span", "qty-pill", unitAmount(item))
-                );
-            }
 
             const toggle = () => {
                 const next = !isDone(cat.name, item);

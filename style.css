@@ -703,10 +703,10 @@ html, body {
   flex: 0 0 auto;
   font-size: 15px;
   font-weight: 800;
-  color: var(--cyan);
-  background: #0e1930;
-  border-radius: 999px;
-  padding: 3px 12px;
+  color: #ffffff;
+  background: transparent;
+  border-radius: 0;
+  padding: 3px 4px;
 }
 .list-item.done .qty-pill { opacity: 0.45; }
 
