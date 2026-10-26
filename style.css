@@ -650,7 +650,18 @@ html, body {
 .edit-msg { min-height: 12px; margin-top: 8px; font-size: 14px; color: var(--cyan); text-align: right; }
 .edit-msg.error { color: #ff8b8b; }
 
-.modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px; }
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+/* לחצנים במסך הוספת מוצר */
+#addItemOverlay .modal-actions {
+    justify-content: flex-start;
+    direction: rtl;
+}
 .modal-actions.spread { justify-content: space-between; flex-wrap: wrap; margin-top: 12px; }
 .actions-group { display: flex; flex-wrap: wrap; gap: 20px; }
 
