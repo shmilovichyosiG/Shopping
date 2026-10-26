@@ -308,7 +308,9 @@ html, body {
   border-bottom: 1px solid var(--card-border);
 }
 .list-header:first-child { margin-top: 0; }
-.list-header .count { font-size: 14px; font-weight: 500; color: var(--text-muted); }
+    .list-header .count {
+        display: none;
+    }
 
 /* item rows (tap to check) */
 .list-item {
