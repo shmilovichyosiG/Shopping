@@ -39,6 +39,13 @@ const FALLBACK_LIST = `מוצרי חלב: חלב x2, יוגורט x4
 function parseItem(raw) {
     let s = String(raw).trim();
     let done = false;
+    let unit = "%";
+    const unitMatch = s.match(/([@$%])(?=\s*(?:[x×*]\s*\d{1,2})?$)/);
+    if (unitMatch) {
+        unit = unitMatch[1];
+        s = s.slice(0, unitMatch.index) + s.slice(unitMatch.index + 1);
+        s = s.trim();
+    }
 
     if (s.startsWith(CHECK)) {
         done = true;
@@ -51,11 +58,12 @@ function parseItem(raw) {
         return {
             name: m[1].trim(),
             qty: Math.min(MAX_QTY, Number(m[2])),
-            done
+            done,
+            unit
         };
     }
 
-    return { name: s, qty: 1, done };
+    return { name: s, qty: 1, done, unit };
 }
 
 function parseList(text) {
@@ -97,6 +105,15 @@ function parseList(text) {
 const cleanName = (s) =>
     String(s).replace(/[:,،\r\n]+/g, " ").replace(/\s+/g, " ").trim();
 
+// Unit markers stored in TXT: @ = 100 g steps, $ = 0.5 kg steps, % = individual items.
+const unitMarker = (item) => ["@", "$", "%"].includes(item?.unit) ? item.unit : "%";
+const unitAmount = (item) => {
+    const qty = Math.max(0, Number(item?.qty) || 0);
+    if (unitMarker(item) === "@") return `${qty * 100} גרם`;
+    if (unitMarker(item) === "$") return `${Number((qty * 0.5).toFixed(2))} ק״ג`;
+    return `${qty} יח׳`;
+};
+
 const lineOf = (name, parts) =>
     (parts.length ? `${ name }: ${ parts.join(", ") } ` : `${ name }: `);
 
@@ -115,7 +132,7 @@ function serializeCatalog(cats) {
 
             if (n && !seen.has(n)) {
                 seen.add(n);
-                parts.push(n);
+                parts.push(`${n}${unitMarker(it)}`);
             }
         });
 
@@ -142,7 +159,7 @@ function serializeShopping(cats) {
 
             parts.push(
                 (it.done ? CHECK : "") +
-                n +
+                `${n}${unitMarker(it)}` +
                 (q > 1 ? ` x${ q } ` : "")
             );
         });
@@ -170,7 +187,7 @@ function serializeCombined(cats) {
 
             parts.push(
                 (it.done && q > 0 ? CHECK : "") +
-                n +
+                `${n}${unitMarker(it)}` +
                 (q === 1 ? "" : ` x${ q } `)
             );
         });
@@ -205,7 +222,8 @@ function mergeModel(catalog, list) {
                 oc.items.push({
                     name: it.name,
                     qty: 0,
-                    done: false
+                    done: false,
+                    unit: it.unit || "%"
                 });
             }
         });
@@ -218,12 +236,13 @@ function mergeModel(catalog, list) {
             let x = oc.items.find((y) => y.name === it.name);
 
             if (!x) {
-                x = { name: it.name, qty: 0, done: false };
+                x = { name: it.name, qty: 0, done: false, unit: it.unit || "%" };
                 oc.items.push(x);
             }
 
             x.qty = it.qty;
             x.done = it.qty > 0 && it.done;
+            x.unit = it.unit || x.unit || "%";
         });
     });
 
@@ -640,6 +659,7 @@ const els = {
     openAddItemBtn: $("openAddItemBtn"),
     addItemOverlay: $("addItemOverlay"),
     addItemName: $("addItemName"),
+    addItemUnit: $("addItemUnit"),
     addItemCategory: $("addItemCategory"),
     addNewCategoryField: $("addNewCategoryField"),
     addNewCategoryName: $("addNewCategoryName"),
@@ -739,7 +759,7 @@ function el(tag, className, text) {
     return node;
 }
 
-function makeStepper(qty, onChange, min) {
+function makeStepper(qty, onChange, min, unit = "%") {
     const wrap = el("div", "stepper");
 
     const minus = el("button", "", "−");
@@ -755,9 +775,12 @@ function makeStepper(qty, onChange, min) {
     let current = qty;
 
     const paint = () => {
-        num.textContent = current;
+        num.textContent = unitAmount({ qty: current, unit });
         minus.disabled = current <= min;
         plus.disabled = current >= MAX_QTY;
+        const stepDescription = unit === "@" ? "100 גרם" : unit === "$" ? "0.5 ק״ג" : "יחידה אחת";
+        minus.setAttribute("aria-label", `הפחת ${stepDescription}`);
+        plus.setAttribute("aria-label", `הוסף ${stepDescription}`);
     };
 
     paint();
@@ -833,6 +856,7 @@ function renderItems(cats) {
                 el("span", "box", "✓"),
                 el("span", "item-text", item.name)
             );
+            if (item.qty > 0) row.appendChild(el("span", "qty-pill", unitAmount(item)));
 
             if (canWrite()) {
                 row.appendChild(
@@ -845,12 +869,12 @@ function renderItems(cats) {
                             name: item.name,
                             qty: q
                         });
-                    }, 1)
+                    }, 1, item.unit)
                 );
 
-            } else if (item.qty > 1) {
+            } else {
                 row.appendChild(
-                    el("span", "qty-pill", `×${item.qty}`)
+                    el("span", "qty-pill", unitAmount(item))
                 );
             }
 
@@ -1516,7 +1540,7 @@ function renderEditor(focusAddFor) {
                 item.qty = q;
                 row.classList.toggle("zero", q === 0);
                 count.textContent = String(activeCount());
-            }, 0);
+            }, 0, item.unit);
 
 
             const rm = iconButton(
@@ -1676,7 +1700,8 @@ els.addItemConfirm.addEventListener("click", () => {
             category.items.push({
                 name,
                 qty: parsed.qty,
-                done: false
+                done: false,
+                unit: els.addItemUnit.value
             });
         }
     });
