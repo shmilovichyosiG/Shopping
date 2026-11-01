@@ -657,6 +657,7 @@ const els = {
     chooseOk: $("chooseOk"),
     chooseCancel: $("chooseCancel"),
     editOverlay: $("editOverlay"),
+    cleanPurchasedBtn: $("cleanPurchasedBtn"),
     visualPane: $("visualPane"),
     textPane: $("textPane"),
     editorCats: $("editorCats"),
@@ -1877,6 +1878,49 @@ function closeEdit() {
 
 els.editBtn.addEventListener("click", openEdit);
 els.editCancel.addEventListener("click", closeEdit);
+
+els.cleanPurchasedBtn.addEventListener("click", async () => {
+    const ok = await confirmDialog({
+        title: "ניקוי קניות",
+        message: "לנקות קניות שנרכשו?",
+        okLabel: "אישור"
+    });
+
+    if (!ok) return;
+
+    let cats;
+
+    if (editorMode === "visual") {
+        cats = draft;
+    } else {
+        cats = parseList(els.editText.value);
+    }
+
+    let removed = 0;
+
+    cats.forEach((category) => {
+        category.items.forEach((item) => {
+            if (item.qty > 0 && item.done) {
+                item.qty = 0;
+                item.done = false;
+                removed++;
+            }
+        });
+    });
+
+    if (editorMode === "visual") {
+        draft = cats;
+        renderEditor();
+    } else {
+        els.editText.value = serializeCombined(cats);
+    }
+
+    setEditMsg(
+        removed
+            ? `נוקו ${removed} מוצרים שנרכשו. לחצו "שמור" לעדכון הרשימה.`
+            : "אין מוצרים שנרכשו לניקוי."
+    );
+});
 
 els.editOverlay.addEventListener("click", (e) => {
     if (e.target === els.editOverlay) closeEdit();

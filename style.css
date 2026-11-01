@@ -441,6 +441,25 @@ html, body {
 }
 .editor-head .modal-title { margin: 0; }
 
+.clean-purchased-btn {
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+  padding: 11px;
+  display: inline-grid;
+  place-items: center;
+}
+
+.clean-purchased-btn svg {
+  width: 26px;
+  height: 26px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .tabs {
   display: inline-flex;
   background: #0e1930;
