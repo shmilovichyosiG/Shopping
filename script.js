@@ -1543,7 +1543,17 @@ function renderEditor(focusAddFor) {
             );
         });
 
-        cat.items.forEach((item, ii) => {
+        const sortedItems = cat.items
+            .map((item, originalIndex) => ({
+                item,
+                originalIndex
+            }))
+            .sort((a, b) =>
+                a.item.name.localeCompare(b.item.name, "he")
+            );
+
+        sortedItems.forEach(({ item, originalIndex: ii }) => {
+
             const row = el("div", "ed-item");
 
             const itemInput = el(
