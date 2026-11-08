@@ -1435,6 +1435,8 @@ function iconButton(label, symbol, className, onClick) {
     return b;
 }
 
+const expandedEditorCategories = new WeakSet();
+
 function renderEditor(focusAddFor) {
     const root = els.editorCats;
     root.innerHTML = "";
@@ -1472,6 +1474,21 @@ function renderEditor(focusAddFor) {
         const count = el("span", "ed-count", String(activeCount()));
         count.title = "מוצרים ברשימת הקניות";
 
+        const toggle = el(
+            "button",
+            "ed-cat-toggle",
+            expandedEditorCategories.has(cat) ? "−" : "+"
+        );
+        toggle.type = "button";
+        toggle.setAttribute(
+            "aria-label",
+            expandedEditorCategories.has(cat) ? "הסתר מוצרים בקטגוריה" : "הצג מוצרים בקטגוריה"
+        );
+        toggle.setAttribute(
+            "aria-expanded",
+            expandedEditorCategories.has(cat) ? "true" : "false"
+        );
+
         const del = iconButton(
             "מחק קטגוריה",
             "🗑",
@@ -1500,12 +1517,31 @@ function renderEditor(focusAddFor) {
             }
         );
 
-        head.append(nameInput, count, del);
+        head.append(toggle, nameInput, count, del);
         card.appendChild(head);
 
         /* פריטים */
 
         const list = el("div", "ed-items");
+        const initiallyExpanded = expandedEditorCategories.has(cat);
+        list.hidden = !initiallyExpanded;
+
+        toggle.addEventListener("click", () => {
+            if (expandedEditorCategories.has(cat)) {
+                expandedEditorCategories.delete(cat);
+            } else {
+                expandedEditorCategories.add(cat);
+            }
+
+            const expanded = expandedEditorCategories.has(cat);
+            list.hidden = !expanded;
+            toggle.textContent = expanded ? "−" : "+";
+            toggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+            toggle.setAttribute(
+                "aria-label",
+                expanded ? "הסתר מוצרים בקטגוריה" : "הצג מוצרים בקטגוריה"
+            );
+        });
 
         cat.items.forEach((item, ii) => {
             const row = el("div", "ed-item");
