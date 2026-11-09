@@ -836,7 +836,9 @@ function renderItems(cats) {
     }
 
     cats.forEach((cat) => {
-        const items = activeItems(cat);
+        const items = activeItems(cat).slice().sort((a, b) =>
+            a.name.localeCompare(b.name, "he")
+        );
         if (!items.length) return;
 
         const header = el("div", "list-header");
